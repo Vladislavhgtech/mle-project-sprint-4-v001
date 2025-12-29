@@ -1,17 +1,28 @@
-Инструкция по запуску рекомендательной системы
-Установка
-bash
+# Инструкция по запуску рекомендательной системы
+
+## Установка
+
+```bash
 git clone git@github.com:Vladislavhgtech/mle-project-sprint-4-v001
 cd mle-project-sprint-4-v001
+
+# Загрузка данных
 wget https://storage.yandexcloud.net/mle-data/ym/tracks.parquet -P data
 wget https://storage.yandexcloud.net/mle-data/ym/catalog_names.parquet -P data
 wget https://storage.yandexcloud.net/mle-data/ym/interactions.parquet -P data
 Настройка окружения
 bash
+# Установка зависимостей системы
 sudo apt-get install python3.10-venv build-essential
+
+# Создание виртуального окружения
 python3.10 -m venv env_recsys_start
 source env_recsys_start/bin/activate
+
+# Установка Python-зависимостей
 pip install --no-cache-dir -r requirements.txt
+
+# Подготовка данных
 python s3_scripts/prepare_datasets.py
 Запуск сервисов
 Откройте 4 терминала:
@@ -36,7 +47,7 @@ bash
 python launch_service.py --service-name=features_store
 Проверка и тестирование
 bash
-# Проверка работы
+# Проверка работы сервисов
 curl http://127.0.0.1:8000/healthy
 curl http://127.0.0.1:8001/healthy
 curl http://127.0.0.1:8002/healthy
@@ -44,17 +55,3 @@ curl http://127.0.0.1:8003/healthy
 
 # Запуск тестов
 python test_service.py
-Остановка
-Нажмите Ctrl+C во всех 4 терминалах.
-
-Кратко о системе
-main_app (8000) - главный сервис
-
-recs_store (8001) - оффлайн рекомендации
-
-events_store (8002) - история прослушиваний
-
-features_store (8003) - онлайн рекомендации
-
-Рекомендации смешиваются: нечетные позиции - онлайн, четные - оффлайн.
-
