@@ -1,72 +1,60 @@
-# Подготовка виртуальной машины
+Инструкция по запуску рекомендательной системы
+Установка
+bash
+git clone git@github.com:Vladislavhgtech/mle-project-sprint-4-v001
+cd mle-project-sprint-4-v001
+wget https://storage.yandexcloud.net/mle-data/ym/tracks.parquet -P data
+wget https://storage.yandexcloud.net/mle-data/ym/catalog_names.parquet -P data
+wget https://storage.yandexcloud.net/mle-data/ym/interactions.parquet -P data
+Настройка окружения
+bash
+sudo apt-get install python3.10-venv build-essential
+python3.10 -m venv env_recsys_start
+source env_recsys_start/bin/activate
+pip install --no-cache-dir -r requirements.txt
+python s3_scripts/prepare_datasets.py
+Запуск сервисов
+Откройте 4 терминала:
 
-## Склонируйте репозиторий
+Терминал 1 (порт 8000):
 
-Склонируйте репозиторий проекта:
+bash
+cd ~/mle-project-sprint-4-v001
+source env_recsys_start/bin/activate
+python launch_service.py --service-name=main_app
+Терминал 2 (порт 8001):
 
-```
-git clone https://github.com/yandex-praktikum/mle-project-sprint-4-v001.git
-```
+bash
+python launch_service.py --service-name=recs_store
+Терминал 3 (порт 8002):
 
-## Активируйте виртуальное окружение
+bash
+python launch_service.py --service-name=events_store
+Терминал 4 (порт 8003):
 
-Используйте то же самое виртуальное окружение, что и созданное для работы с уроками. Если его не существует, то его следует создать.
+bash
+python launch_service.py --service-name=features_store
+Проверка и тестирование
+bash
+# Проверка работы
+curl http://127.0.0.1:8000/healthy
+curl http://127.0.0.1:8001/healthy
+curl http://127.0.0.1:8002/healthy
+curl http://127.0.0.1:8003/healthy
 
-Создать новое виртуальное окружение можно командой:
+# Запуск тестов
+python test_service.py
+Остановка
+Нажмите Ctrl+C во всех 4 терминалах.
 
-```
-python3 -m venv env_recsys_start
-```
+Кратко о системе
+main_app (8000) - главный сервис
 
-После его инициализации следующей командой
+recs_store (8001) - оффлайн рекомендации
 
-```
-. env_recsys_start/bin/activate
-```
+events_store (8002) - история прослушиваний
 
-установите в него необходимые Python-пакеты следующей командой
+features_store (8003) - онлайн рекомендации
 
-```
-pip install -r requirements.txt
-```
+Рекомендации смешиваются: нечетные позиции - онлайн, четные - оффлайн.
 
-### Скачайте файлы с данными
-
-Для начала работы понадобится три файла с данными:
-- [tracks.parquet](https://storage.yandexcloud.net/mle-data/ym/tracks.parquet)
-- [catalog_names.parquet](https://storage.yandexcloud.net/mle-data/ym/catalog_names.parquet)
-- [interactions.parquet](https://storage.yandexcloud.net/mle-data/ym/interactions.parquet)
- 
-Скачайте их в директорию локального репозитория. Для удобства вы можете воспользоваться командой wget:
-
-```
-wget https://storage.yandexcloud.net/mle-data/ym/tracks.parquet
-
-wget https://storage.yandexcloud.net/mle-data/ym/catalog_names.parquet
-
-wget https://storage.yandexcloud.net/mle-data/ym/interactions.parquet
-```
-
-## Запустите Jupyter Lab
-
-Запустите Jupyter Lab в командной строке
-
-```
-jupyter lab --ip=0.0.0.0 --no-browser
-```
-
-# Расчёт рекомендаций
-
-Код для выполнения первой части проекта находится в файле `recommendations.ipynb`. Изначально, это шаблон. Используйте его для выполнения первой части проекта.
-
-# Сервис рекомендаций
-
-Код сервиса рекомендаций находится в файле `recommendations_service.py`.
-
-<*укажите здесь необходимые шаги для запуска сервиса рекомендаций*>
-
-# Инструкции для тестирования сервиса
-
-Код для тестирования сервиса находится в файле `test_service.py`.
-
-<*укажите здесь необходимые шаги для тестирования сервиса рекомендаций*>
